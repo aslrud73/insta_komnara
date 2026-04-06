@@ -1,0 +1,28 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700&family=Quicksand:wght@700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Noto Sans KR", ui-sans-serif, system-ui, sans-serif;
+  --font-quicksand: "Quicksand", sans-serif;
+  
+  --color-primary-blue: #2C3E7A;
+  --color-soft-blue: #4A90E2;
+  --color-accent-gold: #FFD700;
+  --color-bg-light: #F9FBFF;
+}
+
+@layer base {
+  body {
+    @apply bg-bg-light text-[#333] font-sans;
+  }
+}
+
+@keyframes pulse-custom {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+  100% { transform: scale(1); }
+}
+
+.animate-pulse-custom {
+  animation: pulse-custom 2s infinite;
+}

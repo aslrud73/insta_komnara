@@ -1,0 +1,66 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: content
+    // Document ID: freeGift
+    // Fields:
+    //   - title: string (required)
+    //   - tags: string (required)
+    //   - icon: string (required)
+    //   - dmLink: string (required)
+    //   - missionText: string (required)
+    //   - embedUrl: string (required)
+    //   - updatedAt: timestamp (required)
+    //
+    // Collection: users
+    // Document ID: {userId}
+    // Fields:
+    //   - uid: string (required)
+    //   - email: string (required)
+    //   - role: string (required, 'admin' or 'user')
+    //
+    // ===============================================================
+
+    // Helper Functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && 
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+         (request.auth.token.email == "decentration73@gmail.com" && request.auth.token.email_verified == true));
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isValidFreeGift(data) {
+      return data.keys().hasAll(['title', 'tags', 'icon', 'dmLink', 'missionText', 'embedUrl', 'updatedAt']) &&
+             data.title is string && data.title.size() > 0 && data.title.size() < 100 &&
+             data.tags is string && data.tags.size() > 0 && data.tags.size() < 200 &&
+             data.icon is string && data.icon.size() > 0 && data.icon.size() < 10 &&
+             data.dmLink is string && data.dmLink.matches("^https?://.*") &&
+             data.missionText is string && data.missionText.size() > 0 &&
+             data.embedUrl is string && (data.embedUrl == "" || data.embedUrl.matches("^https?://.*")) &&
+             data.updatedAt is timestamp;
+    }
+
+    // Rules
+    match /content/freeGift {
+      allow read: if true;
+      allow write: if isAdmin() && isValidFreeGift(request.resource.data);
+    }
+
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isOwner(userId) && request.resource.data.role == 'user';
+      allow update: if isAdmin();
+    }
+  }
+}

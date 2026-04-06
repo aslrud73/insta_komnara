@@ -1,0 +1,40 @@
+{
+  "entities": {
+    "FreeGift": {
+      "title": "Free Gift",
+      "description": "Content for the preview box and mission section",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string", "description": "The title of the preview content" },
+        "tags": { "type": "string", "description": "Hashtags for the content" },
+        "icon": { "type": "string", "description": "Emoji icon" },
+        "dmLink": { "type": "string", "description": "Instagram DM link" },
+        "missionText": { "type": "string", "description": "HTML or plain text for the mission instructions" },
+        "embedUrl": { "type": "string", "description": "URL for embedding preview content (iframe)" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Last update timestamp" }
+      },
+      "required": ["title", "tags", "icon", "dmLink", "missionText", "embedUrl"]
+    },
+    "User": {
+      "title": "User",
+      "description": "User profile with role information",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string" },
+        "role": { "type": "string", "enum": ["admin", "user"] }
+      },
+      "required": ["uid", "email", "role"]
+    }
+  },
+  "firestore": {
+    "content/freeGift": {
+      "schema": { "$ref": "#/entities/FreeGift" },
+      "description": "Single document for the free gift content"
+    },
+    "users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "User profile documents"
+    }
+  }
+}
