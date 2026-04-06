@@ -98,8 +98,13 @@ export default function App() {
   const handleLogin = async () => {
     try {
       await signInWithPopup(auth, googleProvider);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Login Error:", error);
+      if (error.code === 'auth/unauthorized-domain') {
+        alert("이 도메인이 Firebase 콘솔의 '승인된 도메인'에 등록되어 있지 않습니다. Firebase 콘솔(Authentication > 설정 > 승인된 도메인)에 현재 도메인을 추가해 주세요.");
+      } else {
+        alert("로그인 중 오류가 발생했습니다: " + error.message);
+      }
     }
   };
 
